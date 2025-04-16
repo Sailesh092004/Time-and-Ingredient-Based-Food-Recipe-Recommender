@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faded Flavours - Recipe Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #FF6B6B;
+            --secondary-color: #4ECDC4;
+            --background-color: #F7FFF7;
+            --text-color: #2D3047;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .btn-option {
+            margin: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--secondary-color);
+            background: white;
+            color: var(--text-color);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-option:hover, .btn-option.active {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .time-input {
+            width: 100px;
+            padding: 0.5rem;
+            border: 2px solid var(--secondary-color);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .recipe-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .recipe-details {
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Faded Flavours</h1>
+            <p class="lead">Discover traditional recipes based on your preferences</p>
+        </div>
+
+        <div class="form-section">
+            <h2>Your Preferences</h2>
+            
+            <!-- Meal Type Selection -->
+            <div class="mb-4">
+                <h4>Meal Type</h4>
+                <div id="mealTypeOptions" class="d-flex flex-wrap">
+                    <!-- Options will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Time Inputs -->
+            <div class="mb-4">
+                <h4>Time Constraints</h4>
+                <div class="d-flex align-items-center">
+                    <div class="me-3">
+                        <label for="prepTime" class="form-label">Preparation Time (minutes)</label>
+                        <input type="number" id="prepTime" class="time-input" min="0" value="30">
+                    </div>
+                    <div>
+                        <label for="cookTime" class="form-label">Cooking Time (minutes)</label>
+                        <input type="number" id="cookTime" class="time-input" min="0" value="30">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diet Selection -->
+            <div class="mb-4">
+                <h4>Diet Type</h4>
+                <div id="dietOptions" class="d-flex flex-wrap">
+                    <button class="btn-option" data-value="vegetarian">Vegetarian</button>
+                    <button class="btn-option" data-value="non-vegetarian">Non-Vegetarian</button>
+                </div>
+            </div>
+
+            <!-- Flavor Selection -->
+            <div class="mb-4">
+                <h4>Flavor Profile</h4>
+                <div id="flavorOptions" class="d-flex flex-wrap">
+                    <button class="btn-option" data-value="sweet">Sweet</button>
+                    <button class="btn-option" data-value="spicy">Spicy</button>
+                    <button class="btn-option" data-value="sour">Sour</button>
+                    <button class="btn-option" data-value="bitter">Bitter</button>
+                </div>
+            </div>
+
+            <!-- Region Selection -->
+            <div class="mb-4">
+                <h4>Region</h4>
+                <div id="regionOptions" class="d-flex flex-wrap">
+                    <button class="btn-option" data-value="North">North</button>
+                    <button class="btn-option" data-value="South">South</button>
+                    <button class="btn-option" data-value="East">East</button>
+                    <button class="btn-option" data-value="West">West</button>
+                    <button class="btn-option" data-value="any">Any Region</button>
+                </div>
+            </div>
+
+            <!-- Ingredients Input -->
+            <div class="mb-4">
+                <h4>Available Ingredients</h4>
+                <textarea id="ingredients" class="form-control" rows="3" 
+                    placeholder="Enter ingredients separated by commas (e.g., milk, sugar, ghee)"></textarea>
+            </div>
+
+            <!-- Generate Button -->
+            <button id="generateBtn" class="btn btn-primary btn-lg w-100" 
+                style="background-color: var(--primary-color); border: none;">
+                Generate Recipes
+            </button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>Generating your recipes...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="mt-4">
+            <!-- Recipe cards will be inserted here -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get meal types from backend
+        async function getMealTypes() {
+            try {
+                const response = await fetch('/get_meal_types');
+                const mealTypes = await response.json();
+                const container = document.getElementById('mealTypeOptions');
+                
+                mealTypes.forEach(type => {
+                    const button = document.createElement('button');
+                    button.className = 'btn-option';
+                    button.textContent = type;
+                    button.dataset.value = type;
+                    button.addEventListener('click', function() {
+                        // Remove active class from all meal type buttons
+                        container.querySelectorAll('.btn-option').forEach(btn => {
+                            btn.classList.remove('active');
+                        });
+                        // Add active class to clicked button
+                        this.classList.add('active');
+                    });
+                    container.appendChild(button);
+                });
+            } catch (error) {
+                console.error('Error fetching meal types:', error);
+            }
+        }
+
+        // Handle option selection for other buttons
+        document.querySelectorAll('#dietOptions .btn-option, #flavorOptions .btn-option, #regionOptions .btn-option').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from siblings
+                this.parentElement.querySelectorAll('.btn-option').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                // Add active class to clicked button
+                this.classList.add('active');
+            });
+        });
+
+        // Generate recipes
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const constraints = {
+                course: document.querySelector('#mealTypeOptions .active')?.dataset.value || '',
+                prep_time: parseInt(document.getElementById('prepTime').value) || 30,
+                cook_time: parseInt(document.getElementById('cookTime').value) || 30,
+                diet: document.querySelector('#dietOptions .active')?.dataset.value || '',
+                flavor_profile: document.querySelector('#flavorOptions .active')?.dataset.value || '',
+                region: document.querySelector('#regionOptions .active')?.dataset.value || '',
+                ingredients: document.getElementById('ingredients').value.split(',').map(i => i.trim())
+            };
+
+            // Show loading spinner
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').innerHTML = '';
+
+            try {
+                const response = await fetch('/generate_recipes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(constraints)
+                });
+
+                const recipes = await response.json();
+                displayRecipes(recipes);
+            } catch (error) {
+                console.error('Error generating recipes:', error);
+                alert('Error generating recipes. Please try again.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        });
+
+        // Display recipes
+        function displayRecipes(recipes) {
+            const resultsContainer = document.getElementById('results');
+            resultsContainer.innerHTML = '';
+
+            recipes.forEach(recipe => {
+                const card = document.createElement('div');
+                card.className = 'recipe-card';
+                card.innerHTML = `
+                    <h3 class="recipe-title">${recipe.name}</h3>
+                    <div class="recipe-details">
+                        <p><strong>Diet:</strong> ${recipe.diet}</p>
+                        <p><strong>Meal Type:</strong> ${recipe.course}</p>
+                        <p><strong>Preparation Time:</strong> ${recipe.prep_time} minutes</p>
+                        <p><strong>Cooking Time:</strong> ${recipe.cook_time} minutes</p>
+                        <p><strong>Region:</strong> ${recipe.region}</p>
+                        <p><strong>Ingredients:</strong> ${recipe.ingredients}</p>
+                        <p><strong>Source:</strong> <a href="${recipe.source_link}" target="_blank">View Recipe</a></p>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', getMealTypes);
+    </script>
+</body>
+</html> 
