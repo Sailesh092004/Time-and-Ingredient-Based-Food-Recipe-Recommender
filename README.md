@@ -1,4 +1,4 @@
-# Faded Flavours - Indian Recipe Recommender
+# Vintage Flavours - Indian Recipe Recommender
 
 A smart recipe recommendation system that suggests Indian recipes based on your preferences, available ingredients, and time constraints.
 
