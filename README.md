@@ -3,7 +3,7 @@
 A smart recipe recommendation system that suggests Indian recipes based on your preferences, available ingredients, and time constraints.
 
 ## Author
-**Sailesh**
+**Sailesh** **Sai Kiran Reddy** **Anisha Reddy**
 
 ## Features
 
